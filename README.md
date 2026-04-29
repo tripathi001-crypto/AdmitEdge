@@ -1,2 +1,0 @@
-# AdmitEdge
-MBA application 
