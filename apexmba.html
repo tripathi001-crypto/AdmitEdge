@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ApexMBA – Your MBA Admissions Co-Pilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#07070d; --surface:#111118; --surface2:#181824; --surface3:#1f1f2e;
+  --border:#26263a; --border2:#32324a;
+  --accent:#c9a97f; --accent2:#7e9bc8; --accent3:#9b7ec8;
+  --text:#eae8e2; --muted:#7a7a8e; --muted2:#5a5a6e;
+  --green:#6fcf97; --orange:#f2994a; --red:#eb5757;
+  --r:12px; --shadow:0 8px 32px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .18s;letter-spacing:.01em}
+.btn-gold{background:var(--accent);color:#07070d;padding:13px 28px;font-size:.93rem}.btn-gold:hover{background:#d9bb92;transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,169,127,.28)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border2);padding:13px 28px;font-size:.93rem}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{background:var(--surface2);color:var(--muted);border:1px solid var(--border);padding:7px 14px;font-size:.8rem;border-radius:7px}.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:rgba(235,87,87,.12);color:var(--red);border:1px solid rgba(235,87,87,.25);padding:6px 12px;font-size:.78rem;border-radius:6px}.btn-danger:hover{background:rgba(235,87,87,.22)}
+.btn-block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* ── FORMS ── */
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.93rem;outline:none;transition:border-color .18s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg textarea{resize:vertical;min-height:90px;line-height:1.6}
+.fg select option{background:var(--surface2)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ── LANDING ── */
+#landing{min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(ellipse 80% 60% at 15% 60%,rgba(201,169,127,.07) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 85% 15%,rgba(126,155,200,.05) 0%,transparent 50%),var(--bg)}
+.l-nav{display:flex;justify-content:space-between;align-items:center;padding:22px 48px;border-bottom:1px solid var(--border)}
+.logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--accent);letter-spacing:-.02em}
+.logo b{color:var(--text);font-weight:400}
+.l-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 24px 50px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,169,127,.1);border:1px solid rgba(201,169,127,.25);color:var(--accent);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 14px;border-radius:100px;margin-bottom:28px}
+.hero-h{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,5.5vw,4.8rem);font-weight:700;line-height:1.06;letter-spacing:-.03em;margin-bottom:22px;max-width:780px}
+.hero-h i{font-style:italic;color:var(--accent)}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:520px;line-height:1.72;margin-bottom:40px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:72px}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:920px;width:100%}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:26px;text-align:left;transition:border-color .2s}
+.feat:hover{border-color:var(--border2)}
+.feat-ico{font-size:1.7rem;margin-bottom:14px}
+.feat h3{font-size:.9rem;font-weight:600;margin-bottom:7px}
+.feat p{font-size:.82rem;color:var(--muted);line-height:1.6}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);z-index:2000;align-items:center;justify-content:center}
+.overlay.on{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px;width:430px;max-width:95vw;position:relative;animation:mIn .22s ease}
+@keyframes mIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.modal-x{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1;transition:color .2s}.modal-x:hover{color:var(--text)}
+.modal h2{font-family:'Playfair Display',serif;font-size:1.65rem;margin-bottom:6px}
+.modal .sub{color:var(--muted);font-size:.87rem;margin-bottom:26px}
+.auth-sw{text-align:center;margin-top:18px;font-size:.85rem;color:var(--muted)}.auth-sw a{color:var(--accent);cursor:pointer}.auth-sw a:hover{text-decoration:underline}
+.err-msg{color:var(--red);font-size:.82rem;margin-top:10px;display:none}
+
+/* ── APP SHELL ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+#app.on{display:flex}
+.app-nav{display:flex;align-items:center;justify-content:space-between;padding:0 36px;height:62px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500;flex-shrink:0}
+.nav-l{display:flex;align-items:center;gap:28px}
+.nav-links{display:flex;gap:2px}
+.nl{background:none;border:none;color:var(--muted);padding:8px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s}
+.nl:hover{color:var(--text);background:var(--surface2)}
+.nl.on{color:var(--accent);background:rgba(201,169,127,.1)}
+.nav-r{display:flex;align-items:center;gap:12px}
+.upill{display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:100px;padding:5px 14px 5px 6px;font-size:.83rem}
+.ava{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#07070d}
+
+/* ── PAGES ── */
+.page{display:none;padding:40px 48px;max-width:1080px;margin:0 auto;width:100%}
+.page.on{display:block}
+.ph{margin-bottom:32px}
+.ph h1{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;margin-bottom:6px}
+.ph p{color:var(--muted);font-size:.92rem}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px}
+.card+.card{margin-top:18px}
+.card-title{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+
+/* ── ONBOARDING STEPS ── */
+.steps-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px}
+.sp{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:100px;background:var(--surface);border:1px solid var(--border);font-size:.8rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s}
+.sp:hover{border-color:var(--border2);color:var(--text)}
+.sp.on{background:rgba(201,169,127,.1);border-color:var(--accent);color:var(--accent)}
+.sp.done{border-color:var(--green);color:var(--green)}
+.sp-n{width:19px;height:19px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700}
+.sp.on .sp-n{background:var(--accent);color:#07070d}
+.sp.done .sp-n{background:var(--green);color:#07070d}
+.ob-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:34px}
+.ob-card h2{font-family:'Playfair Display',serif;font-size:1.35rem;margin-bottom:4px}
+.ob-card .sub{color:var(--muted);font-size:.87rem;margin-bottom:24px}
+.form-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+
+/* ── PROFILE VIEW ── */
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:2px}
+.pi-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.pi-val{font-size:.92rem;font-weight:500}
+
+/* ── EVAL ── */
+.eval-hero{text-align:center;padding:48px 32px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.eval-hero .ico{font-size:3rem;margin-bottom:14px}
+.eval-hero h2{font-family:'Playfair Display',serif;font-size:1.45rem;margin-bottom:10px}
+.eval-hero p{color:var(--muted);font-size:.9rem;max-width:480px;margin:0 auto 26px}
+.eval-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:0}
+.eval-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px}
+.eval-card h3{font-size:.87rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.eval-card ul{list-style:none}
+.eval-card li{padding:7px 0;border-bottom:1px solid var(--border);font-size:.86rem;color:var(--muted);line-height:1.55}
+.eval-card li:last-child{border-bottom:none}
+.eval-card li::before{content:"→ ";color:var(--accent)}
+.eval-full{grid-column:1/-1}
+.pos-text{font-size:.9rem;line-height:1.75;color:var(--muted);font-style:italic;border-left:3px solid var(--accent);padding-left:16px}
+
+/* ── SCHOOLS ── */
+.s-section-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;margin-top:24px}
+.s-section-label:first-child{margin-top:0}
+.school-item{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;margin-bottom:10px;transition:border-color .18s}
+.school-item:hover{border-color:var(--border2)}
+.si-name{font-weight:600;font-size:.93rem;margin-bottom:4px}
+.si-reason{font-size:.83rem;color:var(--muted);line-height:1.55}
+.si-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.tag-reach{background:rgba(235,87,87,.14);color:var(--red);border:1px solid rgba(235,87,87,.28)}
+.tag-target{background:rgba(201,169,127,.14);color:var(--accent);border:1px solid rgba(201,169,127,.28)}
+.tag-safe{background:rgba(111,207,151,.14);color:var(--green);border:1px solid rgba(111,207,151,.28)}
+.track-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.77rem;cursor:pointer;transition:all .18s;white-space:nowrap}
+.track-btn:hover{background:var(--accent);color:#07070d;border-color:var(--accent)}
+.track-btn.tracked{background:rgba(111,207,151,.12);color:var(--green);border-color:rgba(111,207,151,.3);cursor:default}
+
+/* ── ESSAY ── */
+.essay-layout{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.ep{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px}
+.ep-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:18px}
+.mode-row{display:flex;gap:8px;margin-bottom:16px}
+.mode-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s}
+.mode-btn.on{background:rgba(201,169,127,.12);border-color:var(--accent);color:var(--accent)}
+.mode-hint{font-size:.78rem;color:var(--muted);line-height:1.55;margin-bottom:16px;padding:10px 12px;background:var(--surface2);border-radius:7px;border-left:2px solid var(--accent)}
+.ai-out{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px;font-size:.87rem;line-height:1.7;min-height:180px}
+.out-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:8px}
+.out-block{margin-bottom:18px}
+.out-block ul{list-style:none}
+.out-block li{padding:6px 0;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--muted);line-height:1.5}
+.out-block li:last-child{border-bottom:none}
+.essay-full{grid-column:1/-1}
+.improved-essay{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:22px;font-size:.9rem;line-height:1.78;color:var(--text);white-space:pre-wrap;max-height:500px;overflow-y:auto}
+
+/* ── DASHBOARD ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px}
+.stat-l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat-v{font-family:'DM Mono',monospace;font-size:2rem;font-weight:500}
+.c-accent{color:var(--accent)}.c-green{color:var(--green)}.c-orange{color:var(--orange)}.c-muted{color:var(--muted)}
+.tracker{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.tr-head{display:grid;grid-template-columns:minmax(150px,2fr) 130px 130px 130px 1fr;padding:12px 22px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.tr-row{display:grid;grid-template-columns:minmax(150px,2fr) 130px 130px 130px 1fr;padding:14px 22px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s}
+.tr-row:last-child{border-bottom:none}
+.tr-row:hover{background:rgba(255,255,255,.015)}
+.tr-name{font-weight:600;font-size:.88rem;display:flex;align-items:center;gap:8px}
+.mini-sel{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:.8rem;width:100%}
+.mini-inp{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;font-family:'DM Mono',monospace;font-size:.78rem;width:100%}
+.sbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:100px;font-size:.7rem;font-weight:600}
+.s-ns{background:rgba(122,122,142,.12);color:var(--muted)}
+.s-ip{background:rgba(242,153,74,.12);color:var(--orange)}
+.s-dn{background:rgba(111,207,151,.12);color:var(--green)}
+.sdot{width:5px;height:5px;border-radius:50%}
+.tr-acts{display:flex;gap:6px}
+.ia{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s}
+.ia:hover{border-color:var(--accent);color:var(--accent)}
+.ia.del:hover{border-color:var(--red);color:var(--red)}
+
+/* ── LOADING ── */
+.lbar{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;margin:14px 0}
+.lbar-i{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;animation:lani 1.4s ease-in-out infinite;width:35%}
+@keyframes lani{0%{transform:translateX(-100%)}100%{transform:translateX(390%)}}
+.loading-txt{color:var(--muted);font-size:.85rem;text-align:center;padding:12px 0}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:56px 24px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.empty-ico{font-size:3rem;margin-bottom:14px}
+.empty h3{font-size:1.05rem;margin-bottom:7px}
+.empty p{color:var(--muted);font-size:.88rem;margin-bottom:22px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:13px 18px;font-size:.85rem;box-shadow:var(--shadow);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);max-width:300px;pointer-events:none}
+#toast.on{transform:translateY(0);opacity:1}
+#toast.ok{border-color:var(--green)}
+#toast.er{border-color:var(--red)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){
+  .page{padding:24px 18px}
+  .l-nav{padding:16px 20px}
+  .feat-grid{grid-template-columns:1fr}
+  .essay-layout{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .tr-head,.tr-row{grid-template-columns:1fr 100px 90px}
+  .tr-head span:nth-child(n+4),.tr-row>*:nth-child(n+4){display:none}
+  .fg-row{grid-template-columns:1fr}
+  .eval-grid{grid-template-columns:1fr}
+  .pg{grid-template-columns:1fr 1fr}
+  .steps-bar{gap:4px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ LANDING ═══════════════════════ -->
+<div id="landing">
+  <nav class="l-nav">
+    <div class="logo">Apex<b>MBA</b></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="openAuth('login')" style="padding:9px 22px;font-size:.85rem">Sign In</button>
+      <button class="btn btn-gold" onclick="openAuth('signup')" style="padding:9px 22px;font-size:.85rem">Get Started Free</button>
+    </div>
+  </nav>
+  <div class="l-hero">
+    <div class="badge">✦ AI-Powered MBA Admissions Platform</div>
+    <h1 class="hero-h">Your <i>personal</i> MBA<br>admissions consultant</h1>
+    <p class="hero-sub">Profile evaluation, school strategy, and essay coaching — all powered by AI that thinks like a top admissions consultant.</p>
+    <div class="hero-btns">
+      <button class="btn btn-gold" onclick="openAuth('signup')">Start Your Application →</button>
+      <button class="btn btn-ghost" onclick="openAuth('login')">Already a member</button>
+    </div>
+    <div class="feat-grid">
+      <div class="feat"><div class="feat-ico">🔍</div><h3>Profile Evaluation</h3><p>Honest AI assessment of your strengths, weaknesses, and gaps from an admissions consultant's lens.</p></div>
+      <div class="feat"><div class="feat-ico">🏫</div><h3>School Strategy</h3><p>Curated reach, target, and safe school lists with reasoning tailored to your exact profile.</p></div>
+      <div class="feat"><div class="feat-ico">✍️</div><h3>Essay Assistant</h3><p>Improve or rewrite essays while preserving your authentic voice. Zero generic AI tone.</p></div>
+      <div class="feat"><div class="feat-ico">📊</div><h3>Application Dashboard</h3><p>Track every school, essay, and deadline in one clean view. Never miss a submission.</p></div>
+      <div class="feat"><div class="feat-ico">🎯</div><h3>Positioning Advice</h3><p>Know exactly how to frame your story to stand out from thousands of applicants.</p></div>
+      <div class="feat"><div class="feat-ico">💾</div><h3>Saved to Your Account</h3><p>All profiles, essays, and school lists saved securely — pick up right where you left off.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ AUTH MODAL ═══════════════════════ -->
+<div class="overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeAuth()">✕</button>
+
+    <!-- LOGIN -->
+    <div id="lf">
+      <h2>Welcome back</h2>
+      <div class="sub">Sign in to continue your MBA journey</div>
+      <div class="fg"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')handleLogin()"></div>
+      <div class="fg"><label>Password</label><input type="password" id="li-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleLogin()"></div>
+      <div class="err-msg" id="li-err"></div>
+      <button class="btn btn-gold btn-block" id="li-btn" onclick="handleLogin()">Sign In</button>
+      <div class="auth-sw">No account? <a onclick="switchAuth('signup')">Create one free</a></div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="sf" style="display:none">
+      <h2>Create account</h2>
+      <div class="sub">Start your MBA admissions journey today</div>
+      <div class="fg"><label>Full Name</label><input type="text" id="su-name" placeholder="Alex Johnson"></div>
+      <div class="fg"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com"></div>
+      <div class="fg"><label>Password</label><input type="password" id="su-pass" placeholder="Min. 6 characters" onkeydown="if(event.key==='Enter')handleSignup()"></div>
+      <div class="err-msg" id="su-err"></div>
+      <button class="btn btn-gold btn-block" id="su-btn" onclick="handleSignup()">Create Account & Start</button>
+      <div class="auth-sw">Have an account? <a onclick="switchAuth('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ APP ═══════════════════════ -->
+<div id="app">
+  <nav class="app-nav">
+    <div class="nav-l">
+      <div class="logo" style="font-size:1.2rem">Apex<b>MBA</b></div>
+      <div class="nav-links">
+        <button class="nl on" onclick="goPage('dash')">Dashboard</button>
+        <button class="nl" onclick="goPage('profile')">Profile</button>
+        <button class="nl" onclick="goPage('eval')">Evaluation</button>
+        <button class="nl" onclick="goPage('schools')">Schools</button>
+        <button class="nl" onclick="goPage('essays')">Essays</button>
+      </div>
+    </div>
+    <div class="nav-r">
+      <div class="upill">
+        <div class="ava" id="nav-ava">A</div>
+        <span id="nav-name" style="font-size:.83rem">User</span>
+      </div>
+      <button class="btn btn-sm" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="page on" id="pg-dash">
+    <div class="ph"><h1>Dashboard</h1><p>Track every school, essay and deadline in one place</p></div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-l">Schools Tracking</div><div class="stat-v c-accent" id="s-total">0</div></div>
+      <div class="stat"><div class="stat-l">Done</div><div class="stat-v c-green" id="s-done">0</div></div>
+      <div class="stat"><div class="stat-l">In Progress</div><div class="stat-v c-orange" id="s-prog">0</div></div>
+      <div class="stat"><div class="stat-l">Not Started</div><div class="stat-v c-muted" id="s-ns">0</div></div>
+    </div>
+    <div id="dash-body"></div>
+  </div>
+
+  <!-- ── PROFILE ── -->
+  <div class="page" id="pg-profile">
+    <div class="ph"><h1>Your Profile</h1><p>Complete all sections to unlock AI evaluation and school recommendations</p></div>
+    <div id="profile-body"></div>
+  </div>
+
+  <!-- ── EVALUATION ── -->
+  <div class="page" id="pg-eval">
+    <div class="ph"><h1>Profile Evaluation</h1><p>AI analysis from an MBA admissions consultant's perspective</p></div>
+    <div id="eval-body">
+      <div class="eval-hero">
+        <div class="ico">🔍</div>
+        <h2>Ready for your honest evaluation?</h2>
+        <p>Our AI thinks like a senior HBS/Wharton admissions consultant. You'll get candid, specific feedback — not generic advice.</p>
+        <button class="btn btn-gold" id="eval-run-btn" onclick="runEval()">Analyze My Profile</button>
+        <div id="eval-load" style="display:none"><div class="lbar"><div class="lbar-i"></div></div><div class="loading-txt">Reading your profile... consulting the adcom playbook...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCHOOLS ── -->
+  <div class="page" id="pg-schools">
+    <div class="ph"><h1>School Strategy</h1><p>AI-curated school list tailored to your profile</p></div>
+    <div id="schools-body">
+      <div style="text-align:center;padding:48px">
+        <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px">Click below to generate a personalised reach / target / safe school list based on your profile.</p>
+        <button class="btn btn-gold" id="sch-run-btn" onclick="runSchools()">Generate My School List</button>
+        <div id="sch-load" style="display:none;margin-top:14px"><div class="lbar"><div class="lbar-i"></div></div><div class="loading-txt">Matching your profile to top MBA programs...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ESSAYS ── -->
+  <div class="page" id="pg-essays">
+    <div class="ph"><h1>Essay Assistant</h1><p>Improve or rewrite your essays — your voice stays intact, always</p></div>
+    <div class="essay-layout">
+      <!-- LEFT: input -->
+      <div class="ep">
+        <div class="ep-title">Essay Input</div>
+        <div class="fg">
+          <label>School (optional)</label>
+          <select id="ess-school"><option value="">— Select a school —</option></select>
+        </div>
+        <div class="fg"><label>Essay Prompt</label><textarea id="ess-prompt" placeholder="e.g. Why MBA? Why now? Why our school?"></textarea></div>
+        <div class="fg"><label>Your Draft</label><textarea id="ess-draft" style="min-height:180px" placeholder="Paste your essay draft here..."></textarea></div>
+        <div class="mode-row">
+          <button class="mode-btn on" id="mb-improve" onclick="setMode('improve')">✏️ Improve Mode</button>
+          <button class="mode-btn" id="mb-rewrite" onclick="setMode('rewrite')">🔄 Rewrite Mode</button>
+        </div>
+        <div class="mode-hint" id="mode-hint"><strong>Improve:</strong> Fixes grammar, clarity and flow. Keeps original wording mostly intact — only polishes what needs fixing.</div>
+        <button class="btn btn-gold btn-block" id="ess-run-btn" onclick="runEssay()">Analyse & Improve →</button>
+        <div id="ess-load" style="display:none;margin-top:10px"><div class="lbar"><div class="lbar-i"></div></div></div>
+      </div>
+
+      <!-- RIGHT: feedback -->
+      <div class="ep">
+        <div class="ep-title">AI Feedback</div>
+        <div id="ess-feedback">
+          <div style="text-align:center;padding:50px 20px;color:var(--muted)">
+            <div style="font-size:2.4rem;margin-bottom:10px">✍️</div>
+            <div style="font-size:.88rem">Paste your draft and click Analyse to see detailed feedback here.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM: improved essay -->
+      <div class="ep essay-full" id="improved-wrap" style="display:none">
+        <div class="ep-title">Improved Version</div>
+        <div class="improved-essay" id="improved-text"></div>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <button class="btn btn-gold" onclick="saveEssay()">💾 Save Essay</button>
+          <button class="btn btn-ghost" onclick="copyEssay()">📋 Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ═══════════ STORAGE / AUTH ═══════════ */
+const LS_DB  = 'apexmba_v2_db';
+const LS_SES = 'apexmba_v2_ses';
+let U = null; // current user data object
+let essMode = 'improve';
+
+function dbLoad(){ try{ return JSON.parse(localStorage.getItem(LS_DB)||'{"u":{},"s":{}}'); }catch(e){ return {u:{},s:{}}; } }
+function dbSave(db){ localStorage.setItem(LS_DB,JSON.stringify(db)); }
+
+function blankUser(name,email){
+  return { name, email, profile:null, evalCache:null, schoolsCache:null, tracked:[], essays:{} };
+}
+
+// ── AUTH ──
+function openAuth(mode){ document.getElementById('auth-modal').classList.add('on'); switchAuth(mode); }
+function closeAuth(){ document.getElementById('auth-modal').classList.remove('on'); }
+function switchAuth(m){
+  document.getElementById('lf').style.display = m==='login'?'block':'none';
+  document.getElementById('sf').style.display = m==='signup'?'block':'none';
+  errHide('li-err'); errHide('su-err');
+}
+function errShow(id,msg){ const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
+function errHide(id){ document.getElementById(id).style.display='none'; }
+
+function handleSignup(){
+  const name  = v('su-name').trim();
+  const email = v('su-email').trim().toLowerCase();
+  const pass  = v('su-pass');
+  if(!name||!email||!pass){ errShow('su-err','Please fill in all fields.'); return; }
+  if(pass.length<6){ errShow('su-err','Password must be at least 6 characters.'); return; }
+  const db = dbLoad();
+  if(db.u[email]){ errShow('su-err','Account already exists. Sign in instead.'); return; }
+  db.u[email] = { pw: btoa(pass), data: blankUser(name,email) };
+  const sk = 'ses_'+Date.now(); db.s[sk]=email;
+  dbSave(db); localStorage.setItem(LS_SES,sk);
+  closeAuth();
+  mountUser(db.u[email].data);
+  toast('Welcome to ApexMBA! Let\'s build your profile. 🎓','ok');
+  setTimeout(()=>goPage('profile'),700);
+}
+
+function handleLogin(){
+  const email = v('li-email').trim().toLowerCase();
+  const pass  = v('li-pass');
+  if(!email||!pass){ errShow('li-err','Please fill in all fields.'); return; }
+  const db = dbLoad();
+  const user = db.u[email];
+  if(!user||atob(user.pw)!==pass){ errShow('li-err','Invalid email or password.'); return; }
+  const sk = 'ses_'+Date.now(); db.s[sk]=email;
+  dbSave(db); localStorage.setItem(LS_SES,sk);
+  closeAuth();
+  mountUser(user.data);
+  toast('Welcome back, '+user.data.name.split(' ')[0]+'! 👋','ok');
+}
+
+function doLogout(){
+  localStorage.removeItem(LS_SES);
+  U=null;
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('landing').style.display='flex';
+}
+
+function checkSession(){
+  const db=dbLoad();
+  const sk=localStorage.getItem(LS_SES);
+  if(sk&&db.s[sk]){ const user=db.u[db.s[sk]]; if(user){ mountUser(user.data); return; } }
+}
+
+function mountUser(ud){
+  U=ud;
+  document.getElementById('landing').style.display='none';
+  document.getElementById('app').classList.add('on');
+  document.getElementById('nav-name').textContent = U.name.split(' ')[0];
+  document.getElementById('nav-ava').textContent  = U.name[0].toUpperCase();
+  renderDash();
+  renderProfile();
+  refreshEssaySchools();
+  // restore caches
+  if(U.evalCache) renderEvalResults(U.evalCache);
+  if(U.schoolsCache) renderSchoolResults(U.schoolsCache);
+}
+
+function persist(){
+  const db=dbLoad();
+  if(U&&db.u[U.email]) db.u[U.email].data=U;
+  dbSave(db);
+}
+
+/* ═══════════ HELPERS ═══════════ */
+function v(id){ return (document.getElementById(id)||{}).value||''; }
+function $(id){ return document.getElementById(id); }
+function toast(msg,type='ok'){
+  const el=$('toast'); el.textContent=msg; el.className='on '+type;
+  setTimeout(()=>el.className='',3400);
+}
+
+/* ═══════════ NAVIGATION ═══════════ */
+const PAGES=['dash','profile','eval','schools','essays'];
+function goPage(id){
+  PAGES.forEach(p=>{
+    $('pg-'+p).classList.toggle('on',p===id);
+  });
+  document.querySelectorAll('.nl').forEach((el,i)=>{
+    el.classList.toggle('on',PAGES[i]===id);
+  });
+  if(id==='dash') renderDash();
+  if(id==='profile') renderProfile();
+  if(id==='essays') refreshEssaySchools();
+}
+
+/* ═══════════ PROFILE / ONBOARDING ═══════════ */
+let obStep=0;
+const STEP_LABELS=['Academics','Test Scores','Work Experience','Achievements','Career Goals'];
+
+function renderProfile(){
+  if(!U) return;
+  const body=$('profile-body');
+  if(U.profile&&U.profile.done) renderProfileView(body);
+  else renderOnboarding(body);
+}
+
+function renderOnboarding(body){
+  const steps=U.profile&&U.profile.steps ? U.profile.steps : Array(5).fill(null).map(()=>({}));
+  const stepsBar=STEP_LABELS.map((l,i)=>{
+    let cls='sp';
+    if(i===obStep) cls+=' on';
+    else if(steps[i]&&Object.keys(steps[i]).length>0) cls+=' done';
+    return `<div class="${cls}" onclick="jumpStep(${i})"><div class="sp-n">${i<obStep?'✓':i+1}</div>${l}</div>`;
+  }).join('');
+
+  const s=steps;
+  let form='';
+  if(obStep===0) form=`
+    <h2>Academic Background</h2><div class="sub">Tell us about your undergraduate education</div>
+    <div class="fg-row">
+      <div class="fg"><label>Undergraduate College</label><input id="o-college" value="${s[0].college||''}" placeholder="e.g. IIT Delhi, NYU..."></div>
+      <div class="fg"><label>Major / Degree</label><input id="o-major" value="${s[0].major||''}" placeholder="Computer Science, Finance..."></div>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>GPA (out of 4.0)</label><input id="o-gpa" type="number" step="0.01" min="0" max="4" value="${s[0].gpa||''}" placeholder="3.7"></div>
+      <div class="fg"><label>Graduation Year</label><input id="o-year" value="${s[0].year||''}" placeholder="2021"></div>
+    </div>`;
+  else if(obStep===1) form=`
+    <h2>Test Scores</h2><div class="sub">Enter whichever test you have taken</div>
+    <div class="fg-row">
+      <div class="fg"><label>GMAT Total</label><input id="o-gmat" value="${s[1].gmat||''}" placeholder="730"></div>
+      <div class="fg"><label>GRE Total</label><input id="o-gre" value="${s[1].gre||''}" placeholder="330"></div>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>GMAT Quant Percentile</label><input id="o-gmat-q" value="${s[1].gmat_q||''}" placeholder="82%"></div>
+      <div class="fg"><label>TOEFL / IELTS (if needed)</label><input id="o-toefl" value="${s[1].toefl||''}" placeholder="112 / 8.0"></div>
+    </div>`;
+  else if(obStep===2) form=`
+    <h2>Work Experience</h2><div class="sub">Your professional background shapes everything</div>
+    <div class="fg-row">
+      <div class="fg"><label>Current Company</label><input id="o-company" value="${s[2].company||''}" placeholder="Goldman Sachs, Google..."></div>
+      <div class="fg"><label>Current Title / Role</label><input id="o-role" value="${s[2].role||''}" placeholder="Associate, Senior Engineer..."></div>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>Industry</label><input id="o-industry" value="${s[2].industry||''}" placeholder="Investment Banking, SaaS..."></div>
+      <div class="fg"><label>Total Years of Experience</label><input id="o-yoe" value="${s[2].yoe||''}" placeholder="4"></div>
+    </div>
+    <div class="fg"><label>Key Accomplishments (be specific — numbers help)</label><textarea id="o-accs" placeholder="Led a $200M deal, grew revenue 40%, managed team of 8...">${s[2].accs||''}</textarea></div>`;
+  else if(obStep===3) form=`
+    <h2>Achievements & Extras</h2><div class="sub">Leadership, awards, community involvement signal character</div>
+    <div class="fg"><label>Leadership Roles (clubs, orgs, startups)</label><textarea id="o-lead" placeholder="Founded XYZ NGO, President of Consulting Club...">${s[3].lead||''}</textarea></div>
+    <div class="fg"><label>Awards & Honours</label><textarea id="o-awards" placeholder="Forbes 30U30, CFA Level III, National Merit Scholar...">${s[3].awards||''}</textarea></div>
+    <div class="fg"><label>Community / Volunteer Work</label><textarea id="o-comm" placeholder="Mentored 20+ underprivileged students...">${s[3].comm||''}</textarea></div>`;
+  else if(obStep===4) form=`
+    <h2>Career Goals</h2><div class="sub">Be specific — vague goals hurt your application</div>
+    <div class="fg-row">
+      <div class="fg"><label>Target Post-MBA Industry</label><input id="o-t-ind" value="${s[4].t_ind||''}" placeholder="Consulting, Private Equity, Tech..."></div>
+      <div class="fg"><label>Target Post-MBA Function</label><input id="o-t-fn" value="${s[4].t_fn||''}" placeholder="Strategy, General Management..."></div>
+    </div>
+    <div class="fg"><label>Short-term Goal (2–3 years post-MBA)</label><textarea id="o-goal-s" placeholder="Join McKinsey as a strategy consultant...">${s[4].goal_s||''}</textarea></div>
+    <div class="fg"><label>Long-term Goal (10+ years)</label><textarea id="o-goal-l" placeholder="Become CEO of a consumer tech company...">${s[4].goal_l||''}</textarea></div>
+    <div class="fg"><label>Why MBA? Why now?</label><textarea id="o-why" placeholder="I've hit a growth ceiling and need the network + credential to pivot into PE...">${s[4].why||''}</textarea></div>`;
+
+  body.innerHTML=`
+    <div class="steps-bar">${stepsBar}</div>
+    <div class="ob-card">
+      ${form}
+      <div class="form-acts">
+        ${obStep>0?`<button class="btn btn-ghost" onclick="jumpStep(${obStep-1})">← Back</button>`:''}
+        <button class="btn btn-gold" onclick="saveObStep()">
+          ${obStep<4?'Save & Continue →':'✓ Complete Profile'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function jumpStep(i){ obStep=i; renderProfile(); }
+
+function saveObStep(){
+  if(!U.profile) U.profile={steps:Array(5).fill(null).map(()=>({})),done:false};
+  const s=U.profile.steps;
+  if(obStep===0) s[0]={college:v('o-college'),major:v('o-major'),gpa:v('o-gpa'),year:v('o-year')};
+  else if(obStep===1) s[1]={gmat:v('o-gmat'),gre:v('o-gre'),gmat_q:v('o-gmat-q'),toefl:v('o-toefl')};
+  else if(obStep===2) s[2]={company:v('o-company'),role:v('o-role'),industry:v('o-industry'),yoe:v('o-yoe'),accs:v('o-accs')};
+  else if(obStep===3) s[3]={lead:v('o-lead'),awards:v('o-awards'),comm:v('o-comm')};
+  else if(obStep===4){
+    s[4]={t_ind:v('o-t-ind'),t_fn:v('o-t-fn'),goal_s:v('o-goal-s'),goal_l:v('o-goal-l'),why:v('o-why')};
+    U.profile.done=true;
+    persist(); toast('Profile saved! 🎉','ok');
+    renderProfile(); return;
+  }
+  persist(); toast('Saved!','ok');
+  obStep++; renderProfile();
+}
+
+function renderProfileView(body){
+  const s=U.profile.steps;
+  body.innerHTML=`
+  <div class="card">
+    <div class="card-title">Academic Background <button class="btn btn-sm" onclick="editProfile()">Edit Profile</button></div>
+    <div class="pg">
+      <div><div class="pi-label">College</div><div class="pi-val">${s[0].college||'—'}</div></div>
+      <div><div class="pi-label">Major</div><div class="pi-val">${s[0].major||'—'}</div></div>
+      <div><div class="pi-label">GPA</div><div class="pi-val">${s[0].gpa||'—'} / 4.0</div></div>
+      <div><div class="pi-label">Graduation</div><div class="pi-val">${s[0].year||'—'}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Test Scores</div>
+    <div class="pg">
+      <div><div class="pi-label">GMAT</div><div class="pi-val">${s[1].gmat||'—'}</div></div>
+      <div><div class="pi-label">GRE</div><div class="pi-val">${s[1].gre||'—'}</div></div>
+      <div><div class="pi-label">GMAT Quant %ile</div><div class="pi-val">${s[1].gmat_q||'—'}</div></div>
+      <div><div class="pi-label">TOEFL / IELTS</div><div class="pi-val">${s[1].toefl||'—'}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Work Experience</div>
+    <div class="pg">
+      <div><div class="pi-label">Company</div><div class="pi-val">${s[2].company||'—'}</div></div>
+      <div><div class="pi-label">Role</div><div class="pi-val">${s[2].role||'—'}</div></div>
+      <div><div class="pi-label">Industry</div><div class="pi-val">${s[2].industry||'—'}</div></div>
+      <div><div class="pi-label">Years of Experience</div><div class="pi-val">${s[2].yoe||'—'} yrs</div></div>
+    </div>
+    ${s[2].accs?`<div style="margin-top:14px"><div class="pi-label">Key Accomplishments</div><div style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-top:4px">${s[2].accs}</div></div>`:''}
+  </div>
+  <div class="card">
+    <div class="card-title">Achievements & Extras</div>
+    ${s[3].lead?`<div style="margin-bottom:12px"><div class="pi-label">Leadership</div><div style="font-size:.88rem;color:var(--muted);line-height:1.6;margin-top:3px">${s[3].lead}</div></div>`:''}
+    ${s[3].awards?`<div style="margin-bottom:12px"><div class="pi-label">Awards</div><div style="font-size:.88rem;color:var(--muted);line-height:1.6;margin-top:3px">${s[3].awards}</div></div>`:''}
+    ${s[3].comm?`<div><div class="pi-label">Community</div><div style="font-size:.88rem;color:var(--muted);line-height:1.6;margin-top:3px">${s[3].comm}</div></div>`:''}
+  </div>
+  <div class="card">
+    <div class="card-title">Career Goals</div>
+    <div class="pg">
+      <div><div class="pi-label">Target Industry</div><div class="pi-val">${s[4].t_ind||'—'}</div></div>
+      <div><div class="pi-label">Target Function</div><div class="pi-val">${s[4].t_fn||'—'}</div></div>
+    </div>
+    ${s[4].goal_s?`<div style="margin-top:14px"><div class="pi-label">Short-term Goal</div><div style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-top:3px">${s[4].goal_s}</div></div>`:''}
+    ${s[4].why?`<div style="margin-top:12px"><div class="pi-label">Why MBA?</div><div style="font-size:.88rem;color:var(--muted);line-height:1.65;margin-top:3px">${s[4].why}</div></div>`:''}
+  </div>`;
+}
+
+function editProfile(){ U.profile.done=false; obStep=0; renderProfile(); }
+
+function profileSummary(){
+  if(!U.profile||!U.profile.steps) return 'Profile not completed yet.';
+  const s=U.profile.steps;
+  return `Applicant: ${U.name}
+Education: ${s[0].college}, ${s[0].major}, GPA ${s[0].gpa}, Class of ${s[0].year}
+Test Scores: GMAT ${s[1].gmat||'N/A'} | GRE ${s[1].gre||'N/A'} | GMAT Quant ${s[1].gmat_q||'N/A'} | TOEFL/IELTS ${s[1].toefl||'N/A'}
+Work: ${s[2].yoe} years total — currently ${s[2].role} at ${s[2].company} (${s[2].industry})
+Accomplishments: ${s[2].accs||'N/A'}
+Leadership: ${s[3].lead||'N/A'}
+Awards: ${s[3].awards||'N/A'}
+Community: ${s[3].comm||'N/A'}
+Post-MBA short-term goal: ${s[4].goal_s||'N/A'}
+Post-MBA long-term goal: ${s[4].goal_l||'N/A'}
+Target industry: ${s[4].t_ind||'N/A'} | Function: ${s[4].t_fn||'N/A'}
+Why MBA / Why now: ${s[4].why||'N/A'}`.trim();
+}
+
+/* ═══════════ AI HELPER ═══════════ */
+async function claude(system,user){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1500,
+      system,
+      messages:[{role:'user',content:user}]
+    })
+  });
+  const d=await r.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content.map(b=>b.text||'').join('');
+}
+
+function parseJSON(raw){
+  return JSON.parse(raw.replace(/```json|```/g,'').trim());
+}
+
+/* ═══════════ EVALUATION ═══════════ */
+async function runEval(){
+  if(!U.profile||!U.profile.done){ toast('Complete your profile first!','er'); goPage('profile'); return; }
+  $('eval-run-btn').disabled=true;
+  $('eval-load').style.display='block';
+  const sys=`You are a senior MBA admissions consultant who has reviewed 5,000+ applications at Harvard Business School, Wharton, and Stanford GSB.
+Your job: evaluate this applicant's profile with full candour — the way you would in a paid consulting session.
+Rules:
+- Be specific. Reference actual details from the profile.
+- No empty praise. If something is mediocre, say so.
+- Identify real gaps (not just "have a good story").
+- Positioning advice must be actionable.
+Respond ONLY in this exact JSON (no preamble, no markdown fences):
+{"strengths":["...","...","..."],"weaknesses":["...","..."],"gaps":["...","..."],"positioning":"2-3 sentences of specific, actionable positioning advice"}`;
+  try{
+    const raw=await claude(sys,`Evaluate this applicant:\n\n${profileSummary()}`);
+    const r=parseJSON(raw);
+    U.evalCache=r; persist();
+    renderEvalResults(r);
+  }catch(e){
+    toast('AI call failed — check your network or try again.','er');
+    $('eval-run-btn').disabled=false;
+    $('eval-load').style.display='none';
+  }
+}
+
+function renderEvalResults(r){
+  $('eval-load').style.display='none';
+  $('eval-body').innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+    <button class="btn btn-ghost" style="font-size:.83rem;padding:8px 18px" onclick="resetEval()">↺ Re-Analyse</button>
+  </div>
+  <div class="eval-grid">
+    <div class="eval-card">
+      <h3><span class="dot" style="background:var(--green)"></span>Strengths</h3>
+      <ul>${r.strengths.map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    <div class="eval-card">
+      <h3><span class="dot" style="background:var(--red)"></span>Weaknesses</h3>
+      <ul>${r.weaknesses.map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    <div class="eval-card">
+      <h3><span class="dot" style="background:var(--orange)"></span>Gaps to Address</h3>
+      <ul>${r.gaps.map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    <div class="eval-card eval-full">
+      <h3><span class="dot" style="background:var(--accent2)"></span>Positioning Advice</h3>
+      <p class="pos-text">${r.positioning}</p>
+    </div>
+  </div>`;
+}
+
+function resetEval(){
+  U.evalCache=null; persist();
+  $('eval-body').innerHTML=`
+  <div class="eval-hero">
+    <div class="ico">🔍</div>
+    <h2>Ready for your honest evaluation?</h2>
+    <p>Our AI thinks like a senior HBS/Wharton admissions consultant. You'll get candid, specific feedback — not generic advice.</p>
+    <button class="btn btn-gold" id="eval-run-btn" onclick="runEval()">Analyse My Profile</button>
+    <div id="eval-load" style="display:none"><div class="lbar"><div class="lbar-i"></div></div><div class="loading-txt">Reading your profile... consulting the adcom playbook...</div></div>
+  </div>`;
+}
+
+/* ═══════════ SCHOOLS ═══════════ */
+async function runSchools(){
+  if(!U.profile||!U.profile.done){ toast('Complete your profile first!','er'); goPage('profile'); return; }
+  $('sch-run-btn').disabled=true;
+  $('sch-load').style.display='block';
+  const sys=`You are a top MBA admissions consultant. Given this applicant's profile, build a balanced school list.
+Respond ONLY in this JSON (no markdown fences):
+{"reach":[{"name":"...","reason":"..."}],"target":[{"name":"...","reason":"..."}],"safe":[{"name":"...","reason":"..."}]}
+- 3 reach schools (tough but worth shooting for)
+- 3 target schools (realistic matches)
+- 2 safe schools (high probability, still excellent)
+Use real, well-known MBA programs. The "reason" should be 1–2 specific sentences tying the school to this applicant's goals and profile.`;
+  try{
+    const raw=await claude(sys,`Profile:\n${profileSummary()}`);
+    const r=parseJSON(raw);
+    U.schoolsCache=r; persist();
+    renderSchoolResults(r);
+  }catch(e){
+    toast('AI call failed — try again.','er');
+    $('sch-run-btn').disabled=false;
+    $('sch-load').style.display='none';
+  }
+}
+
+function renderSchoolResults(data){
+  $('sch-load').style.display='none';
+  const tracked=new Set((U.tracked||[]).map(s=>s.name));
+  const mkList=(arr,type)=>arr.map(s=>{
+    const tk=tracked.has(s.name);
+    return `<div class="school-item">
+      <div>
+        <div class="si-name">🏫 ${s.name}</div>
+        <div class="si-reason">${s.reason}</div>
+      </div>
+      <div class="si-right">
+        <span class="tag tag-${type}">${type==='reach'?'Reach':type==='target'?'Target':'Safe'}</span>
+        <button class="track-btn ${tk?'tracked':''}" onclick="trackSchool('${s.name}','${type}',this)">
+          ${tk?'✓ Tracking':'+ Track'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  $('schools-body').innerHTML=`
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 22px;margin-bottom:24px;font-size:.87rem;color:var(--muted)">
+    Click <strong style="color:var(--text)">+ Track</strong> to add schools to your dashboard where you can manage essays and deadlines.
+  </div>
+  <div class="s-section-label" style="color:var(--red)">● Reach Schools</div>
+  ${mkList(data.reach,'reach')}
+  <div class="s-section-label" style="color:var(--accent)">● Target Schools</div>
+  ${mkList(data.target,'target')}
+  <div class="s-section-label" style="color:var(--green)">● Safe Schools</div>
+  ${mkList(data.safe,'safe')}
+  <button class="btn btn-ghost" style="margin-top:22px;font-size:.83rem;padding:9px 20px" onclick="resetSchools()">↺ Regenerate List</button>`;
+}
+
+function resetSchools(){
+  U.schoolsCache=null; persist();
+  $('schools-body').innerHTML=`<div style="text-align:center;padding:48px"><p style="color:var(--muted);font-size:.9rem;margin-bottom:20px">Click below to generate a personalised reach / target / safe school list based on your profile.</p><button class="btn btn-gold" id="sch-run-btn" onclick="runSchools()">Generate My School List</button><div id="sch-load" style="display:none;margin-top:14px"><div class="lbar"><div class="lbar-i"></div></div><div class="loading-txt">Matching your profile to top MBA programs...</div></div></div>`;
+}
+
+function trackSchool(name,type,btn){
+  if((U.tracked||[]).find(s=>s.name===name)){ toast('Already tracking '+name,'er'); return; }
+  if(!U.tracked) U.tracked=[];
+  U.tracked.push({name,type,deadline:'',status:'not-started',essays:0});
+  persist();
+  btn.classList.add('tracked'); btn.textContent='✓ Tracking';
+  refreshEssaySchools();
+  toast(name+' added to dashboard!','ok');
+}
+
+/* ═══════════ DASHBOARD ═══════════ */
+function renderDash(){
+  if(!U) return;
+  const list=U.tracked||[];
+  $('s-total').textContent=list.length;
+  $('s-done').textContent=list.filter(s=>s.status==='done').length;
+  $('s-prog').textContent=list.filter(s=>s.status==='in-progress').length;
+  $('s-ns').textContent=list.filter(s=>s.status==='not-started').length;
+
+  const body=$('dash-body');
+  if(!list.length){
+    body.innerHTML=`<div class="empty"><div class="empty-ico">🎓</div><h3>No schools tracked yet</h3><p>Generate your school list and click "+ Track" to add schools here</p><button class="btn btn-gold" onclick="goPage('schools')">Get School Recommendations →</button></div>`;
+    return;
+  }
+
+  const badge={reach:'tag-reach',target:'tag-target',safe:'tag-safe'};
+  const rows=list.map((s,i)=>`
+    <div class="tr-row">
+      <span class="tr-name">
+        ${s.name}
+        ${s.type?`<span class="tag ${badge[s.type]||''}" style="font-size:.62rem">${s.type}</span>`:''}
+      </span>
+      <span>
+        <select class="mini-sel" onchange="patchSchool(${i},'essays',+this.value)">
+          ${[0,1,2,3,4].map(n=>`<option value="${n}" ${s.essays===n?'selected':''}>${n} essay${n!==1?'s':''}</option>`).join('')}
+        </select>
+      </span>
+      <span><input type="date" class="mini-inp" value="${s.deadline||''}" onchange="patchSchool(${i},'deadline',this.value)"></span>
+      <span>
+        <select class="mini-sel" onchange="patchSchool(${i},'status',this.value)">
+          <option value="not-started" ${s.status==='not-started'?'selected':''}>Not Started</option>
+          <option value="in-progress" ${s.status==='in-progress'?'selected':''}>In Progress</option>
+          <option value="done" ${s.status==='done'?'selected':''}>Done</option>
+        </select>
+      </span>
+      <span class="tr-acts">
+        <button class="ia" onclick="goEssayFor('${s.name}')">✍️ Essay</button>
+        <button class="ia del" onclick="removeSchool(${i})">✕</button>
+      </span>
+    </div>`).join('');
+
+  body.innerHTML=`<div class="tracker">
+    <div class="tr-head"><span>School</span><span>Essays</span><span>Deadline</span><span>Status</span><span>Actions</span></div>
+    ${rows}
+  </div>`;
+}
+
+function patchSchool(i,field,val){
+  if(!U.tracked[i]) return;
+  U.tracked[i][field]=val;
+  persist(); renderDash();
+}
+
+function removeSchool(i){
+  U.tracked.splice(i,1);
+  persist(); renderDash(); refreshEssaySchools();
+}
+
+function goEssayFor(name){
+  goPage('essays');
+  const sel=$('ess-school');
+  for(let opt of sel.options) if(opt.value===name){ sel.value=name; break; }
+}
+
+/* ═══════════ ESSAYS ═══════════ */
+function setMode(m){
+  essMode=m;
+  $('mb-improve').classList.toggle('on',m==='improve');
+  $('mb-rewrite').classList.toggle('on',m==='rewrite');
+  $('mode-hint').innerHTML=m==='improve'
+    ?'<strong>Improve:</strong> Fixes grammar, clarity and flow. Keeps original wording mostly intact — only polishes what needs fixing.'
+    :'<strong>Rewrite:</strong> Restructures for maximum impact. Preserves your exact story and voice. No new ideas added — no fabrication, ever.';
+}
+
+function refreshEssaySchools(){
+  const sel=$('ess-school'); if(!sel) return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Select a school —</option>'+
+    (U&&U.tracked||[]).map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+  if(cur) sel.value=cur;
+}
+
+async function runEssay(){
+  const prompt=v('ess-prompt').trim();
+  const draft=v('ess-draft').trim();
+  if(!prompt){ toast('Please enter the essay prompt','er'); return; }
+  if(!draft||draft.length<50){ toast('Please paste your essay draft (at least 50 characters)','er'); return; }
+
+  const btn=$('ess-run-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Analysing...';
+  $('ess-load').style.display='block';
+  $('ess-feedback').innerHTML='<div class="loading-txt" style="padding:40px">Reading your essay with fresh eyes...</div>';
+  $('improved-wrap').style.display='none';
+
+  const modeBlock=essMode==='improve'
+    ?`MODE: IMPROVE\nGoal: Fix grammar, improve clarity, tighten flow. Keep 80%+ of original wording. Only change what clearly needs improving.`
+    :`MODE: REWRITE\nGoal: Significantly improve structure, hook, and impact. Preserve the exact story beat-for-beat. Keep the applicant's voice. Add zero new ideas or experiences. Remove clichés ruthlessly.`;
+
+  const sys=`You are an elite MBA essay coach who has helped applicants gain admission to HBS, Wharton, Stanford GSB, Booth, Kellogg, and Columbia.
+You deeply respect the applicant's authentic voice and story.
+
+${modeBlock}
+
+Absolute rules:
+- NEVER invent experiences, achievements, or ideas not in the draft
+- NEVER use generic MBA clichés ("passionate", "synergy", "leverage", "dynamic leader")
+- Preserve the applicant's unique voice and personality
+- Be specific in feedback — point to exact weaknesses, not vague generalities
+- No corporate-speak. No AI-sounding sentences.
+
+Respond ONLY in this exact JSON (no markdown fences):
+{
+  "issues": ["specific issue 1", "specific issue 2", "specific issue 3"],
+  "suggestions": ["actionable suggestion 1", "actionable suggestion 2", "actionable suggestion 3"],
+  "improved_version": "the full improved/rewritten essay text here"
+}`;
+
+  try{
+    const raw=await claude(sys,`Essay Prompt: ${prompt}\n\nApplicant's Draft:\n${draft}`);
+    const r=parseJSON(raw);
+
+    $('ess-feedback').innerHTML=`
+      <div class="out-block">
+        <div class="out-label">⚠ Issues Found</div>
+        <ul>${r.issues.map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+      <div class="out-block">
+        <div class="out-label">→ Suggestions</div>
+        <ul>${r.suggestions.map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>`;
+
+    $('improved-text').textContent=r.improved_version;
+    $('improved-wrap').style.display='block';
+
+    // Auto-save against school if selected
+    const school=v('ess-school')||'_general';
+    if(!U.essays) U.essays={};
+    if(!U.essays[school]) U.essays[school]=[];
+    U.essays[school].push({prompt,draft,result:r,mode:essMode,ts:Date.now()});
+    persist();
+
+  }catch(e){
+    $('ess-feedback').innerHTML='<div style="color:var(--red);font-size:.87rem;padding:20px">Analysis failed. Check your network connection and try again.</div>';
+    toast('Essay analysis failed — try again.','er');
+  }finally{
+    btn.disabled=false; btn.innerHTML='Analyse & Improve →';
+    $('ess-load').style.display='none';
+  }
+}
+
+function saveEssay(){
+  persist();
+  toast('Essay saved to your account! 💾','ok');
+}
+
+function copyEssay(){
+  const txt=$('improved-text').textContent;
+  navigator.clipboard.writeText(txt).then(()=>toast('Copied to clipboard!','ok')).catch(()=>toast('Select text manually to copy','er'));
+}
+
+/* ═══════════ BOOT ═══════════ */
+checkSession();
+</script>
+</body>
+</html>
